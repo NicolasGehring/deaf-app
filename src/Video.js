@@ -43,13 +43,10 @@ const COLOR_LEFT = 'rgb(235,105,233)'
 const COLOR_RIGHT = 'rgb(235,105,233)'
 
 function onResults(results) {
-  console.log("results", results)
+  //console.log("results", results)
   const canvasElement = canvasRef.current
   const canvasCtx = canvasElement.getContext('2d');
-  console.log(canvasCtx)
   // Hide the spinner.
-  document.body.classList.add('loaded');
-  // Remove landmarks we don't want to draw.
   removeLandmarks(results);
   // Update the frame rate.
   //fpsControl.tick();
@@ -176,7 +173,6 @@ function onResults(results) {
 }
 
   useEffect(() => {
-    console.log("tes")
     const faceMesh = new Holistic({
       locateFile: (file) => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic@0.5.1635989137/${file}`
@@ -185,53 +181,39 @@ function onResults(results) {
     faceMeshRef.current = faceMesh
 
     faceMesh.setOptions({
-      maxNumFaces: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
+      effect: "background",
+    enableSegmentation: false,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5,
+    modelComplexity: 1,
+    selfieMode: true,
+    smoothLandmarks: true,
+    smoothSegmentation: true
     })
 
     faceMesh.onResults(onResults)
 
     const camera = new Camera(webcamRef.current.video, {
-      onFrame: async () => {
-        console.log("sending")
+      onFrame: async (input, size) => {
+        console.log(input,size)
         webcamRef.current &&
           (await faceMesh.send({ image: webcamRef.current.video }))
       },
-      width: 640,
-      height: 480,
+      width: 1240,
+      height: 1240,
     })
     camera.start()
 
-    /*
-    if (
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null
-    ) {
-      console.log("test")
-      const maskFilterImage = document.createElement("img", {
-        ref: filterImgRef,
-      })
-      maskFilterImage.objectFit = "contain"
-      maskFilterImage.onload = function () {
-        console.log("TESt22")
-        filterImgRef.current = maskFilterImage
-        webcamRef.current.video.crossOrigin = "anonymous"
-
-        const camera = new Camera(webcamRef.current.video, {
-          onFrame: async () => {
-            console.log("sending")
-            webcamRef.current &&
-              (await faceMesh.send({ image: webcamRef.current.video }))
-          },
-          width: 640,
-          height: 480,
-        })
-        camera.start()
-      }
-      maskFilterImage.src = "images/mask.png"
+    //Fix device pixel Ration issues with Canvas
+    if (window.devicePixelRatio != 1){
+      console.log("entered here")
+      const canvasElement = canvasRef.current
+      console.log(canvasElement)
+      var w = canvasElement.width;
+      var h = canvasElement.height;
+      canvasElement.setAttribute('width', w*window.devicePixelRatio);
+      canvasElement.setAttribute('height', h*window.devicePixelRatio);
     }
-    */
   }, [])
 
 
@@ -247,8 +229,8 @@ function onResults(results) {
 
   return (
     <>
-      <Webcam ref={webcamRef} />
-      <canvas ref={canvasRef} className="output_canvas"></canvas>
+      <Webcam ref={webcamRef} screenshotQuality={1} style={{display:'none'}}/>
+      <canvas ref={canvasRef} className="output_canvas" style={{width:"1280px", height:"720px"}}></canvas>
     </>
   )
   }
