@@ -205,10 +205,8 @@ function onResults(results) {
     camera.start()
 
     //Fix device pixel Ration issues with Canvas
-    if (window.devicePixelRatio != 1){
-      console.log("entered here")
+    if (window.devicePixelRatio !== 1){
       const canvasElement = canvasRef.current
-      console.log(canvasElement)
       var w = canvasElement.width;
       var h = canvasElement.height;
       canvasElement.setAttribute('width', w*window.devicePixelRatio);
