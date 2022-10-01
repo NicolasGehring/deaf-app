@@ -212,6 +212,7 @@ function onResults(results) {
       canvasElement.setAttribute('width', w*window.devicePixelRatio);
       canvasElement.setAttribute('height', h*window.devicePixelRatio);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
